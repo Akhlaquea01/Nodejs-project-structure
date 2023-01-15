@@ -1,5 +1,6 @@
 const AppError = require('../utils/appError');
 const APIFeatures = require('../utils/apiFeatures');
+const bcrypt = require("bcryptjs");
 
 exports.deleteOne = Model => async (req, res, next) => {
     try {
@@ -20,6 +21,10 @@ exports.deleteOne = Model => async (req, res, next) => {
 
 exports.updateOne = Model => async (req, res, next) => {
     try {
+        if(req?.body?.password){
+            const newPd=req.body.password;
+            req.body.password=await bcrypt.hash(newPd, 12);
+        }
         const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
             runValidators: true
